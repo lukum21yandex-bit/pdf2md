@@ -1,0 +1,5 @@
+requirements:
+- fastapi
+- uvicorn
+- llama-cloud>=2.1
+- nest_asyncio

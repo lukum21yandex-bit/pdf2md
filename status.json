@@ -1,0 +1,111 @@
+{
+  "f71e1471cd93d09270583c5d4352ab5a72d66eb7e57cebe9b4981406a717a7f4": {
+    "filename": "оффер петрик александр (1).pdf",
+    "file_hash": "f71e1471cd93d09270583c5d4352ab5a72d66eb7e57cebe9b4981406a717a7f4",
+    "status": "error",
+    "progress": 0,
+    "message": "Обработка документа... 300s",
+    "timestamp": 1778234145.7237992,
+    "error": "'AsyncParsingResource' object has no attribute 'get_result'"
+  },
+  "3f5b0276110b7cfd5d58266d76866b9421d9fe99c94b85135070c6a2a371a844": {
+    "filename": "МАХ б2б тулкит.pdf",
+    "file_hash": "3f5b0276110b7cfd5d58266d76866b9421d9fe99c94b85135070c6a2a371a844",
+    "status": "error",
+    "progress": 0,
+    "message": "Обработка документа...",
+    "timestamp": 1778233811.6984477,
+    "error": "'ParsingGetResponse' object has no attribute 'status'"
+  },
+  "26739b825db648500617f3a3e6b2671064e8e6e3cdffdcc2617245e73bf3d20b": {
+    "filename": "Три методологии оценки локации для «Магазина Цветов» (2).pdf",
+    "file_hash": "26739b825db648500617f3a3e6b2671064e8e6e3cdffdcc2617245e73bf3d20b",
+    "status": "completed",
+    "progress": 100,
+    "message": "Готово!",
+    "timestamp": 1778234683.8552458,
+    "result": {
+      "output_file": "/home/user1/.openclaw/workspace/projects/parce/output/26739b825db648500617f3a3e6b2671064e8e6e3cdffdcc2617245e73bf3d20b.md",
+      "page_count": 10,
+      "timestamp": 1778235011.5889964
+    }
+  },
+  "cb64978cbf977c933e8505d242aed125fd0a25a233894ae2bc6b8dc5cfe7c6a8": {
+    "filename": "Три методики оценки локации для «Магазина Цветов» - Александр Петрик для Анора инвест.pdf",
+    "file_hash": "cb64978cbf977c933e8505d242aed125fd0a25a233894ae2bc6b8dc5cfe7c6a8",
+    "status": "completed",
+    "progress": 100,
+    "message": "Готово!",
+    "timestamp": 1778235222.3119392,
+    "result": {
+      "output_file": "/home/user1/.openclaw/workspace/projects/parce/output/cb64978cbf977c933e8505d242aed125fd0a25a233894ae2bc6b8dc5cfe7c6a8.md",
+      "page_count": 10,
+      "timestamp": 1778235556.5695505
+    }
+  },
+  "6c2920c0d1b4d5eec9c441f89c4b21fe00918628f89053fa00b42a1c13e76fae": {
+    "filename": "Резюме Разработчик BI Teamlead BI и аналитики Отчеты KPI дашборды разрабо Александр Сергеевич Петрик от 18-02-2026 23-07.pdf",
+    "file_hash": "6c2920c0d1b4d5eec9c441f89c4b21fe00918628f89053fa00b42a1c13e76fae",
+    "status": "completed",
+    "progress": 100,
+    "message": "Готово!",
+    "timestamp": 1778238836.048278,
+    "result": {
+      "output_file": "/home/user1/.openclaw/workspace/projects/parce/output/6c2920c0d1b4d5eec9c441f89c4b21fe00918628f89053fa00b42a1c13e76fae.md",
+      "page_count": 5,
+      "timestamp": 1778239172.1598268
+    }
+  },
+  "f4f23a44918cfbbf6e7e3a49b451303214931074fd0e4f6285b2356f4a4cfcac": {
+    "filename": "Extracted Российский рынок ИТ-услуг и&nbsp;системной интеграции_Распределение игроков по отраслям присутствия.pdf",
+    "file_hash": "f4f23a44918cfbbf6e7e3a49b451303214931074fd0e4f6285b2356f4a4cfcac",
+    "status": "completed",
+    "progress": 100,
+    "message": "Готово!",
+    "timestamp": 1778241912.451817,
+    "result": {
+      "output_file": "/home/user1/.openclaw/workspace/projects/parce/output/f4f23a44918cfbbf6e7e3a49b451303214931074fd0e4f6285b2356f4a4cfcac.md",
+      "page_count": 1,
+      "timestamp": 1778242249.9882035
+    }
+  },
+  "cff8843ca2dcf6d661e0b198178ab074c3428569d88d132bab63de1976e7ceb6": {
+    "filename": "8871326_Дайджест Май 2026.pdf",
+    "file_hash": "cff8843ca2dcf6d661e0b198178ab074c3428569d88d132bab63de1976e7ceb6",
+    "status": "completed",
+    "progress": 100,
+    "message": "Готово!",
+    "timestamp": 1778242217.506531,
+    "result": {
+      "output_file": "/home/user1/.openclaw/workspace/projects/parce/output/cff8843ca2dcf6d661e0b198178ab074c3428569d88d132bab63de1976e7ceb6.md",
+      "page_count": 0,
+      "timestamp": 1778242561.8267143
+    }
+  },
+  "bbe2610f90e91e16e27a12ff0172cb97c0fddec0f143bcddf5ad1ec8548d9355": {
+    "filename": "8743039_Дайджест Апрель 2026_compressed.pdf",
+    "file_hash": "bbe2610f90e91e16e27a12ff0172cb97c0fddec0f143bcddf5ad1ec8548d9355",
+    "status": "completed",
+    "progress": 100,
+    "message": "Готово!",
+    "timestamp": 1778243969.7493203,
+    "result": {
+      "output_file": "/home/user1/.openclaw/workspace/projects/parce/output/bbe2610f90e91e16e27a12ff0172cb97c0fddec0f143bcddf5ad1ec8548d9355.md",
+      "page_count": 35,
+      "timestamp": 1778244306.4423668
+    }
+  },
+  "37e4c4da2eea9a6ba36e94fff30302a25e8f07286b2be5b12aa4c948f4fdb222": {
+    "filename": "F_4634412.pdf",
+    "file_hash": "37e4c4da2eea9a6ba36e94fff30302a25e8f07286b2be5b12aa4c948f4fdb222",
+    "status": "completed",
+    "progress": 100,
+    "message": "Готово!",
+    "timestamp": 1778246082.2126207,
+    "result": {
+      "output_file": "/home/user1/.openclaw/workspace/projects/parce/output/37e4c4da2eea9a6ba36e94fff30302a25e8f07286b2be5b12aa4c948f4fdb222.md",
+      "page_count": 2,
+      "timestamp": 1778246418.3719063
+    }
+  }
+}

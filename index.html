@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LlamaCloud PDF Parser</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #8b5cf6;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 24px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .upload-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 28px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--primary);
+            border-radius: 14px;
+            padding: 32px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.08) 0%, rgba(99, 102, 241, 0.02) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%);
+            border-color: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+        }
+
+        .drop-zone::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 60px;
+            height: 60px;
+            border: 2px solid var(--primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translate(-50%, -50%) scale(0.5);
+        }
+
+        .drop-zone.dragover::before {
+            opacity: 0.6;
+            transform: translate(-50%, -50%) scale(1);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) scale(0.5) rotate(360deg); }
+        }
+
+        .drop-zone p {
+            font-size: 0.9rem;
+            color: var(--text);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .drop-zone span {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--card-bg);
+            color: var(--text);
+        }
+
+        .jobs-section {
+            margin-bottom: 24px;
+        }
+
+        .jobs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 0 4px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .jobs-header h2 {
+            font-size: 1.15rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .jobs-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .job-card {
+            background: linear-gradient(180deg, #2d3a4e 0%, #1e293b 100%);
+            border-radius: 14px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .job-card.completed {
+            border-left-color: var(--success);
+        }
+
+        .job-card.error {
+            border-left-color: var(--error);
+        }
+
+        .job-card.cancelled {
+            border-left-color: var(--warning);
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 14px;
+            gap: 12px;
+        }
+
+        .job-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .job-filename {
+            font-weight: 600;
+            font-size: 0.9rem;
+            word-break: break-word;
+            margin-bottom: 6px;
+        }
+
+        .job-hash {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            background: #0f172a;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: middle;
+            cursor: pointer;
+        }
+
+        .job-hash:hover {
+            background: #1e293b;
+            color: var(--text);
+        }
+
+        .job-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.pending { background: var(--warning); }
+        .status-dot.processing { background: var(--primary); }
+        .status-dot.completed { background: var(--success); }
+        .status-dot.error { background: var(--error); }
+        .status-dot.cancelled { background: var(--warning); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            background: #0f172a;
+            color: var(--text-muted);
+        }
+
+        .progress-container {
+            margin: 16px 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #0f172a;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #8b5cf6);
+            border-radius: 6px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .job-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .job-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #334155;
+        }
+
+        .page-count {
+            display: inline-block;
+            background: #334155;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.8rem;
+            margin-top: 10px;
+            padding: 10px;
+            background: #7f1d1d20;
+            border-radius: 6px;
+            font-family: monospace;
+            word-break: break-word;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-muted);
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .service-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.online {
+            background: var(--success);
+        }
+
+        .status-indicator.offline {
+            background: var(--error);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LlamaCloud PDF Parser</h1>
+            <p class="subtitle">Пакетная обработка PDF документов</p>
+        </header>
+
+        <section class="upload-section">
+            <div class="drop-zone" id="dropZone">
+                <p>Перетащите PDF файлы сюда или</p>
+                <span>Нажмите для загрузки</span>
+                <input type="file" id="fileInput" accept=".pdf" multiple>
+            </div>
+            
+            <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn" id="processBtn" disabled>Обработать</button>
+                <button class="btn btn-secondary" onclick="location.reload()">Сбросить</button>
+            </div>
+        </section>
+
+        <section class="jobs-section">
+            <div class="jobs-header">
+                <h2>Задачи обработки <span id="jobCount">(0)</span></h2>
+                <button class="btn btn-secondary" onclick="refreshStatus()">Обновить</button>
+            </div>
+
+            <div class="jobs-list" id="jobsList">
+                <div class="empty-state">
+                    <p>Нет активных задач. Загрузите PDF файлы для обработки.</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Powered by LlamaCloud API <span class="service-status"><span class="status-indicator" id="statusIndicator"></span><span id="serviceStatus">Проверка...</span></span></p>
+        </footer>
+    </div>
+
+    <script>
+        const MAX_FILES = 10;
+        const POLL_INTERVAL = 3000;
+
+        let uploadedFiles = [];
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const processBtn = document.getElementById('processBtn');
+        const jobCountSpan = document.getElementById('jobCount');
+        const jobsList = document.getElementById('jobsList');
+        const serviceStatus = document.getElementById('serviceStatus');
+        const statusIndicator = document.getElementById('statusIndicator');
+
+        // Вычисление SHA256 хеша файла
+        async function computeFileHash(file) {
+            const buffer = await file.arrayBuffer();
+            const bytes = new Uint8Array(buffer);
+            const crypto = window.crypto || window.msCrypto;
+            const hashBuffer = await crypto.subtle.digest('SHA-256', bytes);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkServiceStatus();
+            loadJobs();
+            refreshStatus();
+            setInterval(refreshStatus, POLL_INTERVAL);
+        });
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            await handleFiles(files);
+        });
+
+        fileInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+            await handleFiles(files);
+        });
+
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        async function handleFiles(files) {
+            const newFiles = files.filter(f => f.name.toLowerCase().endsWith('.pdf'));
+            
+            if (newFiles.length === 0) {
+                alert('Только файлы PDF разрешены!');
+                return;
+            }
+
+            if (uploadedFiles.length + newFiles.length > MAX_FILES) {
+                alert(`Максимум ${MAX_FILES} файлов за раз!`);
+                return;
+            }
+
+            for (const file of newFiles) {
+                const fileHash = await computeFileHash(file);
+                const fileObj = {
+                    id: fileHash,
+                    file: file,
+                    name: file.name,
+                    size: (file.size / 1024).toFixed(2) + ' KB',
+                    status: 'pending',
+                    progress: 0,
+                    message: 'Ожидание'
+                };
+                uploadedFiles.push(fileObj);
+            }
+
+            renderJobs();
+            checkProcessButton();
+        }
+
+        function renderJobs() {
+            jobCountSpan.textContent = `(${uploadedFiles.length})`;
+
+            if (uploadedFiles.length === 0) {
+                jobsList.innerHTML = `
+                    <div class="empty-state">
+                        <p>Нет активных задач. Загрузите PDF файлы для обработки.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            jobsList.innerHTML = uploadedFiles.map((job) => `
+                <div class="job-card ${job.status}" data-id="${job.id}">
+                    <div class="job-header">
+                        <div class="job-title">
+                            <div class="job-filename" title="${job.name}">${job.name}</div>
+                            <span class="job-hash" title="${job.id}">${job.id.substring(0, 12)}...${job.id.substring(job.id.length - 8)}</span>
+                        </div>
+                        <div class="job-status">
+                            <span class="status-dot ${job.status}"></span>
+                            <span class="status-badge status-${job.status}">${getStatusText(job.status)}</span>
+                        </div>
+                    </div>
+
+                    ${job.progress > 0 ? `
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${job.progress}%"></div>
+                            </div>
+                            <div class="progress-text">${job.progress}% — ${job.message}</div>
+                        </div>
+                    ` : ''}
+
+                    ${job.status === 'error' && job.error ? `
+                        <div class="error-message">${job.error}</div>
+                    ` : ''}
+
+                    ${job.status === 'completed' ? `
+                        <div class="job-info">
+                            Обработано страниц: ${job.pageCount || 'Неизвестно'}
+                        </div>
+                    ` : ''}
+
+                    <div class="job-actions">
+                        ${job.status === 'completed' ? `
+                            <button class="btn" onclick="downloadJob('${job.id}')">Скачать</button>
+                        ` : ''}
+                        ${['pending', 'processing'].includes(job.status) ? `
+                            <button class="btn btn-secondary" onclick="cancelJob('${job.id}')">Отмена</button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                pending: 'Ожидание',
+                processing: 'Обработка',
+                completed: 'Готово',
+                error: 'Ошибка',
+                cancelled: 'Отменено'
+            };
+            return texts[status] || status;
+        }
+
+        function checkProcessButton() {
+            const hasPending = uploadedFiles.some(f => f.status === 'pending');
+            processBtn.disabled = !hasPending;
+            processBtn.textContent = hasPending ? `Обработать (${uploadedFiles.filter(f => f.status === 'pending').length})` : 'Обработать';
+        }
+
+        async function loadJobs() {
+            try {
+                const response = await fetch('/parce/status');
+                const data = await response.json();
+                
+                Object.entries(data.jobs || {}).forEach(([hash, jobData]) => {
+                    const existingJob = uploadedFiles.find(f => f.id === hash);
+                    if (existingJob) {
+                        existingJob.status = jobData.status;
+                        existingJob.progress = jobData.progress || 0;
+                        existingJob.message = jobData.message || '';
+                        existingJob.pageCount = jobData.result?.page_count;
+                        existingJob.error = jobData.error;
+                    }
+                });
+
+                renderJobs();
+                checkProcessButton();
+            } catch (error) {
+                console.error('Ошибка загрузки задач:', error);
+            }
+        }
+
+        async function refreshStatus() {
+            await loadJobs();
+        }
+
+        processBtn.addEventListener('click', async () => {
+            const pendingFiles = uploadedFiles.filter(f => f.status === 'pending');
+            
+            if (pendingFiles.length === 0) return;
+
+            processBtn.disabled = true;
+
+            for (const fileObj of pendingFiles) {
+                try {
+                    fileObj.status = 'processing';
+                    fileObj.progress = 10;
+                    fileObj.message = 'Загрузка файла...';
+                    renderJobs();
+
+                    const formData = new FormData();
+                    formData.append('file', fileObj.file);
+
+                    const response = await fetch('/parce/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    fileObj.status = 'error';
+                    fileObj.error = error.message;
+                    renderJobs();
+                }
+            }
+
+            checkProcessButton();
+        });
+
+        async function cancelJob(jobId) {
+            try {
+                const response = await fetch(`/parce/cancel/${jobId}`, { method: 'DELETE' });
+                if (response.ok) await loadJobs();
+            } catch (error) {
+                alert('Не удалось отменить задачу');
+            }
+        }
+
+        async function downloadJob(jobId) {
+            try {
+                const response = await fetch(`/parce/download/${jobId}`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${jobId}.md`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }
+            } catch (error) {
+                alert('Не удалось скачать результат');
+            }
+        }
+
+        async function checkServiceStatus() {
+            try {
+                const response = await fetch('/parce/');
+                const data = await response.json();
+                serviceStatus.textContent = 'Сервис работает';
+                statusIndicator.classList.add('online');
+            } catch (error) {
+                serviceStatus.textContent = 'Сервис недоступен';
+                statusIndicator.classList.remove('online');
+            }
+        }
+    </script>
+</body>
+</html>
